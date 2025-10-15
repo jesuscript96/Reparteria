@@ -100,9 +100,10 @@ export default function RegisterCompanyPage() {
       // Redirigir a dashboard
       router.push('/dashboard')
       router.refresh()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error en registro:', error)
-      setError(error.message || 'Error al crear la cuenta')
+      const errorMessage = error instanceof Error ? error.message : 'Error al crear la cuenta'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

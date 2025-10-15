@@ -31,7 +31,7 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -48,9 +48,10 @@ export default function LoginPage() {
       }
 
       router.refresh()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login error:', error)
-      setError(error.message || 'Error al iniciar sesión')
+      const errorMessage = error instanceof Error ? error.message : 'Error al iniciar sesión'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

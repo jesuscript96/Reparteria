@@ -5,7 +5,6 @@
  * Provides helpful messaging and optional action button
  */
 
-import { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { LucideIcon } from 'lucide-react'

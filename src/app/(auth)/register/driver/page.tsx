@@ -63,8 +63,9 @@ export default function RegisterDriverPage() {
 
       setCompany(data.company)
       setStep('form')
-    } catch (error: any) {
-      setError(error.message)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al validar el código'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -128,9 +129,10 @@ export default function RegisterDriverPage() {
 
       router.push('/driver')
       router.refresh()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error en registro:', error)
-      setError(error.message || 'Error al crear la cuenta')
+      const errorMessage = error instanceof Error ? error.message : 'Error al crear la cuenta'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

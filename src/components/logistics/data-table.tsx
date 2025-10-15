@@ -24,7 +24,7 @@ interface DataTableProps<T> {
   emptyMessage?: string
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   onRowClick,

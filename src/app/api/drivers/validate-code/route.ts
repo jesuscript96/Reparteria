@@ -18,7 +18,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const [companyId, inviteCode] = parts
+    const [companyId] = parts
+    // TODO: Validar inviteCode en producción
 
     // Verificar que la empresa existe y está activa
     const { data: company, error } = await supabase

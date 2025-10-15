@@ -1,4 +1,3 @@
-import { cn } from '@/lib/utils'
 import { Logo } from '@/components/shared/ui/logo'
 import { Truck, MapPin, BarChart3, Users } from 'lucide-react'
 
