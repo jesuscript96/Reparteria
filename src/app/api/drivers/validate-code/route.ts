@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 export async function POST(request: NextRequest) {
   try {
     const { code } = await request.json()
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // Buscar empresa con este código de invitación
     // Por ahora, usamos un formato simple: COMPANY_ID-INVITE_CODE
