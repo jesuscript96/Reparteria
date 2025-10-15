@@ -3,6 +3,17 @@ import { type NextRequest, NextResponse } from 'next/server'
 import type { Database } from '@/types/database.types'
 
 export async function middleware(request: NextRequest) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('ERROR: Missing Supabase environment variables in middleware.')
+    return new NextResponse(
+      'Internal Server Error: Supabase environment variables are not configured.',
+      { status: 500 }
+    )
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -10,8 +21,8 @@ export async function middleware(request: NextRequest) {
   })
 
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {
@@ -41,10 +52,11 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const publicRoutes = ['/', '/login', '/register']
-  const isPublicRoute = publicRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route) || request.nextUrl.pathname === '/'
-  )
+  const publicRoutes = ['/login', '/register', '/api']
+  const isPublicRoute =
+    request.nextUrl.pathname === '/' ||
+    publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))
+
 
   if (isPublicRoute) {
     if (user) {
