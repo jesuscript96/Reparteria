@@ -10,33 +10,12 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
-import { createClient as createServiceClient } from '@supabase/supabase-js'
 
 export async function middleware(request: NextRequest) {
   console.log('[MIDDLEWARE] 🔵 Request:', request.nextUrl.pathname)
 
   // Crear cliente de Supabase y actualizar sesión
   const { supabase, response } = await createClient(request)
-
-  // Verificar que las variables de entorno existen
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  console.log('[MIDDLEWARE] 📋 Config check:')
-  console.log('  - Supabase URL:', supabaseUrl ? '✅ Configurado' : '❌ FALTA')
-  console.log('  - Service Role Key:', serviceRoleKey ? `✅ Configurado (${serviceRoleKey.substring(0, 20)}...)` : '❌ FALTA')
-
-  // Cliente admin para verificaciones internas (bypassa RLS)
-  const supabaseAdmin = createServiceClient(
-    supabaseUrl!,
-    serviceRoleKey!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  )
 
   // Rutas públicas que no requieren autenticación
   const publicRoutes = ['/', '/login', '/register']
@@ -45,12 +24,9 @@ export async function middleware(request: NextRequest) {
   )
 
   // Obtener usuario y perfil
-  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
 
   console.log('[MIDDLEWARE] 👤 Usuario:', user ? `${user.email} (${user.id})` : 'No autenticado')
-  if (userError) {
-    console.error('[MIDDLEWARE] ❌ Error obteniendo usuario:', userError)
-  }
 
   // Si es ruta pública
   if (isPublicRoute) {
@@ -60,16 +36,13 @@ export async function middleware(request: NextRequest) {
     if (user) {
       console.log('[MIDDLEWARE] 🔍 Verificando perfil del usuario autenticado...')
 
-      const { data: profile, error: profileError } = await supabaseAdmin
+      const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single()
 
       console.log('[MIDDLEWARE] 📋 Perfil:', profile)
-      if (profileError) {
-        console.error('[MIDDLEWARE] ❌ Error obteniendo perfil:', profileError)
-      }
 
       if (profile) {
         const dashboardUrl = getDashboardUrl(profile.role)
@@ -93,19 +66,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // Obtener rol del usuario usando admin client (bypassa RLS)
+  // Obtener rol del usuario
   console.log('[MIDDLEWARE] 🔍 Obteniendo perfil para verificar rol...')
 
-  const { data: profile, error: profileError } = await supabaseAdmin
+  const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single()
 
   console.log('[MIDDLEWARE] 📋 Perfil obtenido:', profile)
-  if (profileError) {
-    console.error('[MIDDLEWARE] ❌ Error obteniendo perfil:', profileError)
-  }
 
   if (!profile) {
     console.log('[MIDDLEWARE] ❌ Perfil no encontrado - redirigiendo a login')
