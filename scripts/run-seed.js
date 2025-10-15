@@ -30,7 +30,7 @@ async function runSeed() {
 
   try {
     // Leer el archivo de seed
-    const seedPath = path.join(__dirname, '..', 'supabase', 'seed.sql')
+    const seedPath = path.join(process.cwd(), 'supabase', 'seed.sql')
     const seedSQL = fs.readFileSync(seedPath, 'utf8')
 
     console.log('📄 Archivo seed.sql leído correctamente')

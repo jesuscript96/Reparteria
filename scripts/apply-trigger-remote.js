@@ -29,7 +29,7 @@ console.log('')
 console.log('─'.repeat(70))
 
 // Leer el SQL del archivo de migración
-const sqlPath = path.join(__dirname, '../supabase/migrations/20251014193136_ensure_profile_trigger.sql')
+const sqlPath = path.join(process.cwd(), 'supabase', 'migrations', '20251014193136_ensure_profile_trigger.sql')
 const sql = fs.readFileSync(sqlPath, 'utf8')
 
 console.log(sql)

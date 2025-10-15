@@ -55,9 +55,7 @@ if (!dbPassword) {
   console.log('https://supabase.com/dashboard/project/' + projectRef + '/sql/new')
   console.log('')
   console.log('Copia este SQL:')
-  console.log('─'.repeat(70))
-
-  const sqlPath = path.join(__dirname, '../supabase/migrations/20251014193136_ensure_profile_trigger.sql')
+const sqlPath = path.join(process.cwd(), 'supabase', 'migrations', '20251014193136_ensure_profile_trigger.sql')
   const sql = fs.readFileSync(sqlPath, 'utf8')
   console.log(sql)
   console.log('─'.repeat(70))
@@ -79,9 +77,7 @@ async function applyTrigger() {
     console.log('✅ Conectado exitosamente\n')
 
     // Leer el SQL de la migración
-    const sqlPath = path.join(__dirname, '../supabase/migrations/20251014193136_ensure_profile_trigger.sql')
-    const migrationSql = fs.readFileSync(sqlPath, 'utf8')
-
+    const migrationSql = fs.readFileSync(path.join(process.cwd(), 'supabase', 'migrations', '20251014193136_ensure_profile_trigger.sql'), 'utf8')
     console.log('📝 Ejecutando migración...\n')
 
     // Ejecutar el SQL

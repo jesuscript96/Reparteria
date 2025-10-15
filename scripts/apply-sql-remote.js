@@ -17,7 +17,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 // Leer el SQL
-const sqlPath = path.join(__dirname, '../supabase/migrations/20251014193136_ensure_profile_trigger.sql')
+const sqlPath = path.join(process.cwd(), 'supabase', 'migrations', '20251014193136_ensure_profile_trigger.sql')
 const fullSql = fs.readFileSync(sqlPath, 'utf8')
 
 async function executeSQL(sql) {
