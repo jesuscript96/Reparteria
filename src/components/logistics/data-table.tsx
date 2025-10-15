@@ -9,7 +9,7 @@ import { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 interface Column<T> {
-  key: string
+  key: keyof T
   header: string
   render?: (item: T) => ReactNode
   align?: 'left' | 'center' | 'right'
@@ -24,7 +24,7 @@ interface DataTableProps<T> {
   emptyMessage?: string
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends { id: string | number }>({
   data,
   columns,
   onRowClick,
@@ -49,7 +49,7 @@ export function DataTable<T extends Record<string, unknown>>({
             <tr>
               {columns.map((column) => (
                 <th
-                  key={column.key}
+                  key={column.key as string}
                   className={cn(
                     'px-4 py-3 text-left text-label text-neutral-700 border-b border-neutral-200',
                     column.align === 'center' && 'text-center',
@@ -63,9 +63,9 @@ export function DataTable<T extends Record<string, unknown>>({
             </tr>
           </thead>
           <tbody className="bg-white">
-            {data.map((item, rowIndex) => (
+            {data.map((item) => (
               <tr
-                key={rowIndex}
+                key={item.id}
                 onClick={() => onRowClick?.(item)}
                 className={cn(
                   'border-b border-neutral-200 last:border-0',
@@ -75,7 +75,7 @@ export function DataTable<T extends Record<string, unknown>>({
               >
                 {columns.map((column) => (
                   <td
-                    key={column.key}
+                    key={column.key as string}
                     className={cn(
                       'px-4 py-4 text-body-sm text-neutral-900',
                       column.align === 'center' && 'text-center',
@@ -83,7 +83,9 @@ export function DataTable<T extends Record<string, unknown>>({
                       column.className
                     )}
                   >
-                    {column.render ? column.render(item) : item[column.key]}
+                    {column.render
+                      ? column.render(item)
+                      : (item[column.key] as ReactNode)}
                   </td>
                 ))}
               </tr>
