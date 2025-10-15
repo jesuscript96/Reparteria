@@ -12,8 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Link from 'next/link'
 import { LoadingSpinner } from '@/components/shared/ui/loading-spinner'
 import { AlertCircle, ArrowLeft, CheckCircle } from 'lucide-react'
+import { Database } from '@/types/database.types'
 
-const VEHICLE_TYPES = [
+type VehicleType = Database['public']['Enums']['vehicle_type']
+
+const VEHICLE_TYPES: { value: VehicleType; label: string }[] = [
   { value: 'bike', label: '🚲 Bicicleta' },
   { value: 'motorcycle', label: '🏍️ Motocicleta' },
   { value: 'car', label: '🚗 Automóvil' },
@@ -36,7 +39,7 @@ export default function RegisterDriverPage() {
     confirmPassword: '',
     fullName: '',
     phone: '',
-    vehicleType: '',
+    vehicleType: '' as VehicleType | '',
     licensePlate: '',
   })
   const [error, setError] = useState<string | null>(null)
@@ -82,6 +85,11 @@ export default function RegisterDriverPage() {
 
     if (formData.password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres')
+      return
+    }
+
+    if (!formData.vehicleType) {
+      setError('Debes seleccionar un tipo de vehículo')
       return
     }
 
