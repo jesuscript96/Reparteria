@@ -127,6 +127,7 @@ export default function RegisterDriverPage() {
         .insert({
           id: authData.user.id,
           company_id: company.id,
+          driver_code: inviteCode,
           vehicle_type: formData.vehicleType,
           license_plate: formData.licensePlate,
           is_active: true,
