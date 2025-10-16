@@ -29,25 +29,56 @@ export function LoginForm() {
     setLoading(true)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (error) throw error
 
-      if (redirectTo) {
-        router.push(redirectTo)
-      } else {
-        router.push('/dashboard')
+      if (!data.user) {
+        throw new Error('No se pudo obtener información del usuario')
       }
 
+      // Obtener el rol del usuario para redirigir correctamente
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+
+      if (profileError || !profile) {
+        throw new Error('No se pudo obtener el perfil del usuario')
+      }
+
+      // Redirigir según el rol
+      let dashboardUrl = '/dashboard'
+      switch (profile.role) {
+        case 'admin':
+          dashboardUrl = '/admin'
+          break
+        case 'company':
+          dashboardUrl = '/dashboard'
+          break
+        case 'driver':
+          dashboardUrl = '/dashboard'
+          break
+        default:
+          dashboardUrl = '/dashboard'
+      }
+
+      // Si hay redirectTo, usarlo, si no, ir al dashboard del rol
+      const finalUrl = redirectTo || dashboardUrl
+
+      // Esperar un momento para que las cookies se actualicen
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      router.push(finalUrl)
       router.refresh()
     } catch (error) {
       console.error('Login error:', error)
       const errorMessage = error instanceof Error ? error.message : 'Error al iniciar sesión'
       setError(errorMessage)
-    } finally {
       setLoading(false)
     }
   }
